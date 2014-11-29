@@ -34,12 +34,28 @@ var Dropzone = React.createClass({
     });
 
     if (this.props.handler) {
-      var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-      this.props.handler(file);
+      var files = e.dataTransfer && e.dataTransfer.files;
+      this.props.handler(files);
     } else {
       console.error('No handler specified to accept the dropped file.');
     }
   },
+
+  handleClick: function(e) {
+    var fileUpload = this.refs['file-upload'].getDOMNode();
+    fileUpload.value = null;
+    fileUpload.click();
+  },
+
+  handleOnChange: function(e) {
+    if (this.props.handler) {
+      var files = e.target && e.target.files;
+      this.props.handler(files);
+    } else {
+      console.error('No handler specified to accept the dropped file.');
+    }
+  },
+
   render: function() {
 
     var size = this.props.size || "100pt";
@@ -51,7 +67,7 @@ var Dropzone = React.createClass({
         borderColor: "#666",
         borderStyle: this.state.isDragActive ? "solid" : "dashed"
       };
-   
+
       var messageStyle = {
         display: "table-cell",
         width: size,
@@ -64,8 +80,9 @@ var Dropzone = React.createClass({
       };
 
     return (
-      <div className="dropzone" style={dropzoneStyle} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} onDrop={this.handleDrop}>
+      <div className="dropzone" style={dropzoneStyle} onDragLeave={this.handleDragLeave} onDragOver={this.handleDragOver} onDrop={this.handleDrop} onClick={this.handleClick}>
         {this.props.children || <span style={messageStyle}>{this.props.message || "Drop Here"}</span>}
+        <input ref="file-upload" type="file" style={{visibility:"hidden", display: "none"}} onChange={this.handleOnChange} />
       </div>
     );
   }
